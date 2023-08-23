@@ -11,42 +11,38 @@ import java.util.Map;
 
 public class FileReader {
 
-    public Profile getDataFromFile(File file) throws IOException {
-        String fileContent = readContentFromFile(file);
-        Map<String, String> profileData = parseContent(fileContent);
-        return createProfile(profileData);
+    public Profile getDataFromFile(File file) {
+        String data = readDataFromFile(file);
+        Map<String, String> keyValuePairs = parseData(data);
+        return createProfile(keyValuePairs);
     }
 
-    private String readContentFromFile(File file) throws IOException {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
+    private String readDataFromFile(File file) {
+        try {
+            return Files.readString(file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-        return content.toString();
     }
 
-    private Map<String, String> parseContent(String content) {
-        Map<String, String> profileData = new HashMap<>();
-        String[] lines = content.split("\n");
+    private Map<String, String> parseData(String data) {
+        Map<String, String> keyValuePairs = new HashMap<>();
+        String[] lines = data.split("\\r?\\n");
         for (String line : lines) {
-            String[] keyValue = line.split(": ");
-            if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
-                profileData.put(key, value);
+            String[] parts = line.split(": ");
+            if (parts.length == 2) {
+                keyValuePairs.put(parts[0], parts[1]);
             }
         }
-        return profileData;
+        return keyValuePairs;
     }
 
-    private Profile createProfile(Map<String, String> profileData) {
-        String name = profileData.get("Name");
-        Integer age = Integer.valueOf(profileData.get("Age"));
-        String email = profileData.get("Email");
-        Long phone = Long.valueOf(profileData.get("Phone"));
+    private Profile createProfile(Map<String, String> keyValuePairs) {
+        String name = keyValuePairs.get("Name");
+        int age = Integer.parseInt(keyValuePairs.get("Age"));
+        String email = keyValuePairs.get("Email");
+        String phone = keyValuePairs.get("Phone");
         return new Profile(name, age, email, phone);
     }
 }
