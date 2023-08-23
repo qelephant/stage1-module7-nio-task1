@@ -27,13 +27,27 @@ public class FileReader {
     private String readFromFile(File file) throws IOException {
         StringBuilder content = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        
+
         String line;
         while ((line = reader.readLine()) != null) {
             content.append(line).append("\n");
         }
-        
+
         reader.close();
         return content.toString();
+    }
+
+    private Map<String, String> parseProfileData(String content) {
+        Map<String, String> profileData = new HashMap<>();
+        String[] lines = content.split("\\r?\\n");
+
+        for (String line : lines) {
+            String[] parts = line.split(": ");
+            if (parts.length == 2) {
+                profileData.put(parts[0], parts[1]);
+            }
+        }
+
+        return profileData;
     }
 }
