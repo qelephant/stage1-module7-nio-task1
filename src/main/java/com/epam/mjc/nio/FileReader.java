@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileReader {
-
-    public static Profile getDataFromFile(File file) {
+    public Profile getDataFromFile(File file) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+            String content = readFromFile(file);
 
             Map<String, String> profileData = parseProfileData(content);
 
@@ -25,31 +24,16 @@ public class FileReader {
         }
     }
 
-    private static Map<String, String> parseProfileData(String content) {
-        Map<String, String> profileData = new HashMap<>();
-        String[] lines = content.split("\\r?\\n");
-
-        for (String line : lines) {
-            String[] parts = line.split(": ");
-            if (parts.length == 2) {
-                profileData.put(parts[0], parts[1]);
-            }
+    private String readFromFile(File file) throws IOException {
+        StringBuilder content = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
         }
-
-        return profileData;
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        File file = new File("resources/Profile.txt");
-        Profile profile = FileReader.getDataFromFile(file);
-
-        if (profile != null) {
-            System.out.println("Name: " + profile.getName());
-            System.out.println("Age: " + profile.getAge());
-            System.out.println("Email: " + profile.getEmail());
-            System.out.println("Phone: " + profile.getPhone());
-        }
+        
+        reader.close();
+        return content.toString();
     }
 }
