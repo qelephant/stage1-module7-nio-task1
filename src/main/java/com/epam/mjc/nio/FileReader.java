@@ -10,12 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileReader {
-    public static void main(String[] args) {
-        File file = new File("resources/Profile.txt");
-        FileReader fileReader = new FileReader();
-        Profile profile = fileReader.getDataFromFile(file);
-        System.out.println(profile);
-    }
     public Profile getDataFromFile(File file) {
         String data = readDataFromFile(file);
         Map<String, String> keyValuePairs = parseData(data);
@@ -24,7 +18,7 @@ public class FileReader {
 
     private String readDataFromFile(File file) {
         try {
-            return Files.readString(file.toPath());
+            return Files.readString(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
