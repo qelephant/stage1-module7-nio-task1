@@ -6,9 +6,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileReader {
-    public Profile getDataFromFile(File file) {
+    public static void main(String[] args) {
+        File file = new File("resources/Profile.txt");
+        Profile profile = FileReader.getDataFromFile(file);
+
+        if (profile != null) {
+            System.out.println("Name: " + profile.getName());
+            System.out.println("Age: " + profile.getAge());
+            System.out.println("Email: " + profile.getEmail());
+            System.out.println("Phone: " + profile.getPhone());
+        }
+    }
+    
+    public static Profile getDataFromFile(File file) {
         try {
-            String content = readFromFile(file);
+            String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
 
             Map<String, String> profileData = parseProfileData(content);
 
@@ -24,20 +36,7 @@ public class FileReader {
         }
     }
 
-    private String readFromFile(File file) throws IOException {
-        StringBuilder content = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            content.append(line).append("\n");
-        }
-
-        reader.close();
-        return content.toString();
-    }
-
-    private Map<String, String> parseProfileData(String content) {
+    private static Map<String, String> parseProfileData(String content) {
         Map<String, String> profileData = new HashMap<>();
         String[] lines = content.split("\\r?\\n");
 
