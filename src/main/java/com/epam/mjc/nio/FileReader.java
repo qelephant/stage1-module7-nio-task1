@@ -1,7 +1,9 @@
 package com.epam.mjc.nio;
 
 import java.io.File;
-
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileReader {
 
