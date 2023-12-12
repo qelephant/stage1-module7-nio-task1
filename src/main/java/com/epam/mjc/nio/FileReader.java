@@ -1,46 +1,36 @@
-package com.epam.mjc.nio;
+package com.epam.mjc.io;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FileReader {
-    public Profile getDataFromFile(File file) {
-        String data = readDataFromFile(file);
-        Map<String, String> keyValuePairs = parseData(data);
-        return createProfile(keyValuePairs);
-    }
 
-    private String readDataFromFile(File file) {
+    public Profile getDataFromFile(Path filePath) {
+        String name = "";
+        int age = 0;
+        String email = "";
+        long phone = 0L;
+
         try {
-            return Files.readString(file.toPath(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
-    private Map<String, String> parseData(String data) {
-        Map<String, String> keyValuePairs = new HashMap<>();
-        String[] lines = data.split("\\r?\\n");
-        for (String line : lines) {
-            String[] parts = line.split(": ");
-            if (parts.length == 2) {
-                keyValuePairs.put(parts[0], parts[1]);
+            String fileContent = Files.readString(filePath, StandardCharsets.UTF_8);
+            String[] lines = fileContent.split("\\n");
+            for (String line : lines) {
+                if (line.startsWith("Name:")) {
+                    name = line.substring("Name:".length()).trim();
+                } else if (line.startsWith("Age:")) {
+                    age = Integer.parseInt(line.substring("Age:".length()).trim());
+                } else if (line.startsWith("Email:")) {
+                    email = line.substring("Email:".length()).trim();
+                } else if (line.startsWith("Phone:")) {
+                    phone = Long.parseLong(line.substring("Phone:".length()).trim());
+                }
             }
+        } catch (IOException e) {
+            System.err.println("An error occurred while reading the file: " + e.getMessage());
         }
-        return keyValuePairs;
-    }
-
-    private Profile createProfile(Map<String, String> keyValuePairs) {
-        String name = keyValuePairs.get("Name");
-        int age = Integer.parseInt(keyValuePairs.get("Age"));
-        String email = keyValuePairs.get("Email");
-        String phone = keyValuePairs.get("Phone");
         return new Profile(name, age, email, phone);
     }
 }
